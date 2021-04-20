@@ -1,0 +1,51 @@
+
+%Zichun Cao HW5
+%Draw 2-d plot,each data point being a dot
+points=[0 0;-1 2;-3 6;1 -2;3 -6];
+x=points(:,1);
+y=points(:,2);
+
+scatter(x, y, '.');
+xlim([-8,8]);
+ylim([-8,8]);
+
+%Show the source code links for parts 1 and 2 to your github account
+addpath(fullfile('C:\Users\Sherlock Holmes\Desktop\CSE 847 Machine Learning\HW 5'))
+load USPS.mat
+
+%Visualize a particular image;
+A2=reshape(A(2,:),16,16)
+imshow(A2')
+
+%PCA
+whos ind
+pca=pca(A);
+size(A) 
+size(pca)
+%Test the reconstruction error using 10,50,100,200 PCs;
+p=[10,50,100,200]';
+RE=zeros(size(p,1),1);
+Image=zeros(5,2,16,16);
+ 
+for i=1:size(p)
+    C=A*pca(:,1:p(i));
+    R=C*pca(:,1:p(i))';
+    RE(i)=(norm(A-R,'fro'))^2;   
+    Image(i+1,1,:,:)=reshape(R(1,:),[16, 16])';
+    Image(i+1,2,:,:)=reshape(R(2,:),[16, 16])';
+end
+Image(1,1,:,:)=reshape(A(1,:),[16,16])';
+Image(1,2,:,:)=reshape(A(2,:),[16,16])';
+
+%Total reconstruction error for p=10,50,100,200
+table(p,RE,'VariableNames',{'p','RE'})
+
+%Reconstructed images
+for i=2:size(Image,1)
+    for j=1:size(Image,2)
+        plot=squeeze(Image(i,j,:,:));
+        idx=(j-1)*size(Image,1) + i;
+        subplot(size(Image,2),size(Image,1),idx)
+        imshow(plot);
+    end
+end
